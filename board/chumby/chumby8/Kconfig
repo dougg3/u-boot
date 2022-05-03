@@ -1,0 +1,15 @@
+if TARGET_CHUMBY8
+
+config SYS_BOARD
+	default "chumby8"
+
+config SYS_VENDOR
+	default "chumby"
+
+config SYS_SOC
+	default "armada100"
+
+config SYS_CONFIG_NAME
+	default "chumby8"
+
+endif
