@@ -535,6 +535,7 @@ config TARGET_CHUMBY8
 	select CPU_ARM926EJS
 	select DM
 	select DM_SERIAL
+	select DM_GPIO
 	select GPIO_EXTRA_HEADER
 	imply CMD_DM
 	imply MARVELL_GPIO
