@@ -114,7 +114,10 @@ static int mv_sdhci_probe(struct udevice *dev)
 
 	host->name = MVSDH_NAME;
 	host->ioaddr = dev_read_addr_ptr(dev);
-	host->quirks = SDHCI_QUIRK_32BIT_DMA_ADDR | SDHCI_QUIRK_WAIT_SEND_CMD;
+	/* BROKEN_R1B quirk is needed to avoid timeout errors on R1b commands,
+	 * such as reading multiple blocks or erasing blocks. */
+	host->quirks = SDHCI_QUIRK_32BIT_DMA_ADDR | SDHCI_QUIRK_WAIT_SEND_CMD |
+	               SDHCI_QUIRK_BROKEN_R1B;
 	host->mmc = &plat->mmc;
 	host->mmc->dev = dev;
 	host->mmc->priv = host;

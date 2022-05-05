@@ -40,6 +40,15 @@
 	};
 };
 
+&sdhci3 {
+	non-removable;
+	no-1-8-v;
+	bus-width = <4>;
+	max-frequency = <24000000>;
+	cap-sd-highspeed;
+	status = "okay";
+};
+
 /*&twsi1 {
 	status = "okay";
 };
