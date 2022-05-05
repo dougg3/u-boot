@@ -1,0 +1,35 @@
+// SPDX-License-Identifier: GPL-2.0-only
+/*
+ *  Copyright (C) 2012 Marvell Technology Group Ltd.
+ *  Author: Haojian Zhuang <haojian.zhuang@marvell.com>
+ */
+
+/dts-v1/;
+#include "pxa168.dtsi"
+
+/ {
+	model = "Chumby Industries Chumby 8";
+	compatible = "chumby,chumby8", "mrvl,pxa168";
+
+	chosen {
+		bootargs = "console=ttyS0,115200 root=/dev/nfs nfsroot=192.168.1.100:/nfsroot/ ip=192.168.1.101:192.168.1.100::255.255.255.0::eth0:on";
+		stdout-path = &uart1;
+	};
+
+	memory {
+		reg = <0x00000000 0x08000000>; /* 128 MB */
+	};
+};
+
+&uart1 {
+	u-boot,dm-spl;
+	status = "okay";
+};
+
+/*&twsi1 {
+	status = "okay";
+};
+
+&rtc {
+	status = "okay";
+};*/

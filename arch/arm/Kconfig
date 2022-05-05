@@ -533,7 +533,10 @@ config TARGET_ASPENITE
 config TARGET_CHUMBY8
 	bool "Support chumby 8"
 	select CPU_ARM926EJS
+	select DM
+	select DM_SERIAL
 	select GPIO_EXTRA_HEADER
+	imply CMD_DM
 
 config ARCH_DAVINCI
 	bool "TI DaVinci"
