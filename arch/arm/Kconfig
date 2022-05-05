@@ -537,6 +537,7 @@ config TARGET_CHUMBY8
 	select DM_SERIAL
 	select GPIO_EXTRA_HEADER
 	imply CMD_DM
+	imply MARVELL_GPIO
 
 config ARCH_DAVINCI
 	bool "TI DaVinci"

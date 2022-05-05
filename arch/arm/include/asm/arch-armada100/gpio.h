@@ -20,12 +20,6 @@
 #define GPIO_TO_REG(gp)		(gp >> 5)
 #define GPIO_TO_BIT(gp)		(1 << (gp & 0x1F))
 #define GPIO_VAL(gp, val)	((val >> (gp & 0x1F)) & 0x01)
-
-static inline void *get_gpio_base(int bank)
-{
-	const unsigned int offset[4] = {0, 4, 8, 0x100};
-	/* gpio register bank offset - refer Appendix A.36 */
-	return (struct gpio_reg *)(ARMD1_GPIO_BASE + offset[bank]);
-}
+#define MV_GPIO_BASE		ARMD1_GPIO_BASE
 
 #endif /* _ASM_ARCH_GPIO_H */

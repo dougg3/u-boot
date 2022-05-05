@@ -179,6 +179,12 @@ config LPC32XX_GPIO
 	help
 	  Support for the LPC32XX GPIO driver.
 
+config MARVELL_GPIO
+	bool "Marvell PXA168 GPIO driver"
+	default n
+	help
+	  Support for the PXA168 GPIO driver.
+
 config MCP230XX_GPIO
 	bool "MCP230XX GPIO driver"
 	depends on DM

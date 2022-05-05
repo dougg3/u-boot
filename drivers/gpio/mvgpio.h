@@ -16,7 +16,7 @@
 /*
  * GPIO Register map for Marvell SOCs
  */
-struct gpio_reg {
+struct mvgpio_reg {
 	u32 gplr;	/* Pin Level Register - 0x0000 */
 	u32 pad0[2];
 	u32 gpdr;	/* Pin Direction Register - 0x000C */
