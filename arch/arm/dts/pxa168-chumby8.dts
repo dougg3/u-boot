@@ -26,6 +26,20 @@
 	status = "okay";
 };
 
+&gpio {
+	/* Copied from Chumby old u-boot; this makes sure UART1 input works properly by
+	 * setting SPINOR_MODE low, which allows RXD to pass through the level shifter
+	 * U103 properly. The pin is labeled as !OE, so mark it as active low in the DT.
+	 * This means that "output-high" will actually assert !OE (pin output value = 0)
+	 */
+	console_rxd_enable {
+		gpio-hog;
+		gpios = <109 GPIO_ACTIVE_LOW>;
+		output-high;
+		line-name = "rxd-level-shifter-enable";
+	};
+};
+
 /*&twsi1 {
 	status = "okay";
 };

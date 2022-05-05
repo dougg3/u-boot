@@ -125,11 +125,6 @@ int board_early_init_f(void)
 	/* configure MFP's */
 	mfp_config(mfp_cfg);
 
-	/* Copied from Chumby old u-boot; this makes sure UART1 input works properly by
-	 * setting SPINOR_MODE low, which allows RXD to pass through the level shifter
-	 * U103 properly. */
-	*(u32 *)0xd4019154 = (1 << (109-96));
-
 	return 0;
 }
 
