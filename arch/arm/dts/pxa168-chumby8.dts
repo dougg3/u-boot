@@ -53,6 +53,26 @@
 	status = "okay";
 };
 
+&lcd0 {
+	status = "okay";
+	u-boot,dm-pre-reloc;
+
+	display-timings {
+		native-mode = <&timing0>;
+		timing0: panel0 {
+			hactive = <800>;
+			vactive = <600>;
+			hfront-porch = <40>;
+			hsync-len = <128>;
+			hback-porch = <215>;
+			vfront-porch = <14>;
+			vsync-len = <4>;
+			vback-porch = <34>;
+			clock-frequency = <44571429>;
+		};
+	};
+};
+
 /*&twsi1 {
 	status = "okay";
 };
