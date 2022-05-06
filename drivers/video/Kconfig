@@ -528,6 +528,13 @@ config VIDEO_MVEBU
 	Support for the LCD controller integrated in the Marvell
 	Armada XP SoC.
 
+config VIDEO_PXA168
+	bool "Marvell PXA168 LCD controller"
+	default n
+	---help---
+	Support for the LCD controller integrated in the Marvell
+	PXA168 SoC.
+
 config VIDEO_OMAP3
 	bool "Enable OMAP3+ DSS Support"
 	depends on ARCH_OMAP2PLUS

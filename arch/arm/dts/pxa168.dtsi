@@ -80,6 +80,15 @@
 				mrvl,clk-delay-cycles = <0x1F>;
 				status = "disabled";
 			};
+
+			lcd0: lcd-controller@d420b000 {
+				compatible = "marvell,pxa168-lcd";
+				reg = <0xd420b000 0x1000>;
+				interrupts = <41>;
+				clocks = <&soc_clocks PXA168_CLK_DISP0>;
+				resets = <&soc_clocks PXA168_CLK_DISP0>;
+				status = "disabled";
+			};
 		};
 
 		apb@d4000000 {	/* APB */
