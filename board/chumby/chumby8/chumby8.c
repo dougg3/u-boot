@@ -14,6 +14,9 @@
 #include <asm/arch/cpu.h>
 #include <asm/arch/mfp.h>
 #include <asm/arch/armada100.h>
+#include <serial.h>
+#include <dm.h>
+#include <linux/delay.h>
 
 DECLARE_GLOBAL_DATA_PTR;
 
@@ -78,6 +81,9 @@ int board_early_init_f(void)
 		/* UART1 */
 		(MFP107 | MFP_AF1 | MFP_DRIVE_FAST   | MFP_LPM_EDGE_NONE | MFP_PULL_HIGH), /* UART1_TXD */
 		(MFP108 | MFP_AF1 | MFP_DRIVE_FAST   | MFP_LPM_EDGE_NONE | MFP_PULL_HIGH), /* UART1_RXD */
+		/* UART3 */
+		(MFP98  | MFP_AF2 | MFP_DRIVE_MEDIUM | MFP_LPM_EDGE_NONE | MFP_PULL_NONE), /* UART3_TXD */
+		(MFP99  | MFP_AF2 | MFP_DRIVE_MEDIUM | MFP_LPM_EDGE_NONE | MFP_PULL_NONE), /* UART3_RXD */
 		/* Misc */
 		(MFP16  | MFP_AF0 | MFP_DRIVE_FAST   | MFP_LPM_EDGE_NONE | MFP_PULL_HIGH), /* GPIO16 */
 
@@ -135,4 +141,90 @@ int board_init(void)
 	/* adress of boot parameters */
 	gd->bd->bi_boot_params = armd1_sdram_base(0) + 0x100;
 	return 0;
+}
+
+static void write_coproc_data(struct udevice *dev, const char *cmd, int ch_delay)
+{
+	struct dm_serial_ops *ops = serial_get_ops(dev);
+	int err;
+
+	while (*cmd)
+	{
+		udelay(ch_delay);
+		do {
+			err = ops->putc(dev, *cmd);
+		} while (err == -EAGAIN);
+		cmd++;
+	}
+
+	while (ops->pending(dev, false));
+}
+
+static void send_coproc_command(const char *cmd)
+{
+	u32 serial_config = SERIAL_DEFAULT_CONFIG;
+	struct udevice *dev = NULL;
+	struct dm_serial_ops *ops = NULL;
+	int err;
+	int q_found;
+
+	/* Power on UART3 with 14.7456 MHz clock */
+	struct armd1apb1_registers *apb1clkres =
+		(struct armd1apb1_registers *)ARMD1_APBC1_BASE;
+	writel(APBC_APBCLK | APBC_FNCLK | APBC_FNCLKSEL(1), &apb1clkres->uart3);
+
+	if (uclass_get_device_by_seq(UCLASS_SERIAL, 2, &dev)) {
+		log_err("unable to find coprocessor UART\n");
+		return;
+	}
+
+	ops = serial_get_ops(dev);
+	if (!ops) {
+		log_err("coproc UART missing ops\n");
+		return;
+	}
+
+	/* Initialize UART3 to 115200, 8N1 */
+	ops->setconfig(dev, serial_config);
+	ops->setbrg(dev, 115200);
+
+	/* Try several times; with no flow control, command could get lost */
+	for (int i = 0; i < 8; i++) {
+		/* Flush UART */
+		do {
+			err = ops->getc(dev);
+		} while (err != -EAGAIN);
+
+		/* Try a few times: Send "!!!!", listen for '?' */
+		q_found = 0;
+		for (int j = 0; j < 4 && !q_found; j++) {
+			write_coproc_data(dev, "!!!!", 0);
+			for (int k = 0; k < 10 && !q_found; k++) {
+				if (ops->getc(dev) == '?') {
+					q_found = 1;
+					break;
+				}
+				udelay(300);
+			}
+		}
+
+		/* Now send the actual command */
+		write_coproc_data(dev, cmd, 1000);
+	}
+}
+
+void reset_misc(void)
+{
+	/* In order to reset the chumby, we have to send a command on UART3 */
+	send_coproc_command("RSET\n\r");
+	/* if we get here, the coprocessor didn't react */
+	log_err("reboot request failed");
+}
+
+void do_poweroff(void)
+{
+	/* Poweroff is similar to reset, with a different command */
+	send_coproc_command("DOWN\n\r");
+	/* if we get here, the coprocessor didn't react */
+	log_err("poweroff request failed");
 }

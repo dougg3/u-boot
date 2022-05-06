@@ -26,6 +26,10 @@
 	status = "okay";
 };
 
+&uart3 {
+	status = "okay";
+};
+
 &gpio {
 	/* Copied from Chumby old u-boot; this makes sure UART1 input works properly by
 	 * setting SPINOR_MODE low, which allows RXD to pass through the level shifter
