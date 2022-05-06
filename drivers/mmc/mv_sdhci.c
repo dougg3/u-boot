@@ -126,7 +126,7 @@ static int mv_sdhci_probe(struct udevice *dev)
 	if (ret)
 		return ret;
 
-	ret = sdhci_setup_cfg(&plat->cfg, host, 0, 0);
+	ret = sdhci_setup_cfg(&plat->cfg, host, plat->cfg.f_max, 187500);
 	if (ret)
 		return ret;
 
