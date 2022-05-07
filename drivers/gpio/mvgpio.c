@@ -177,7 +177,7 @@ static int mv_gpio_probe(struct udevice *dev)
 	struct mv_gpio_priv *priv = dev_get_priv(dev);
 	struct gpio_dev_priv *uc_priv = dev_get_uclass_priv(dev);
 	uc_priv->gpio_count = priv->count;
-	uc_priv->bank_name = dev->name;
+	uc_priv->bank_name = "GPIO";
 
 	return 0;
 }
