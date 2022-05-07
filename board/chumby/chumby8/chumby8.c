@@ -18,10 +18,18 @@
 #include <dm.h>
 #include <linux/delay.h>
 
+#define L2C_RAM_SEL	(1 << 4)
+
 DECLARE_GLOBAL_DATA_PTR;
+
+extern void reconfigure_plls(void);
+extern void reconfigure_dram(void);
 
 int board_early_init_f(void)
 {
+	u32 val;
+	struct armd1cpu_registers *cpuregs =
+		(struct armd1cpu_registers *)ARMD1_CPU_BASE;
 	u32 mfp_cfg[] = {
 		/* MMC2 - WiFi */
 		(MFP90  | MFP_AF1 | MFP_DRIVE_FAST   | MFP_LPM_EDGE_NONE | MFP_PULL_NONE), /* MMC2_DAT3 */
@@ -126,10 +134,28 @@ int board_early_init_f(void)
 		(MFP54  | MFP_AF1 | MFP_DRIVE_FAST   | MFP_LPM_EDGE_NONE | MFP_PULL_NONE), /* MMC1_DAT5 */
 #endif
 
-		MFP_EOC		/*End of configureation*/
+		MFP_EOC		/*End of configuration*/
 	};
 	/* configure MFP's */
 	mfp_config(mfp_cfg);
+
+	/* Fix PLLs...start off by ensuring L2 cache is set for SRAM.
+	 * Note: We don't need to do any special L2 cache disable commands here, because
+	 * the L2 cache is already disabled. u-boot doesn't use it. */
+	val = readl(&cpuregs->cpu_conf);
+	val = val | L2C_RAM_SEL;
+	writel(val, &cpuregs->cpu_conf);
+
+	/* Now run the special reconfigure PLL code from original Chumby u-boot */
+	reconfigure_plls();
+
+	/* All done; now we can set up the SRAM for L2 cache again (even though we don't use it) */
+	val = readl(&cpuregs->cpu_conf);
+	val = val & ~L2C_RAM_SEL;
+	writel(val, &cpuregs->cpu_conf);
+
+	/* Do special DDR reconfiguration routine from original Chumby u-boot */
+	reconfigure_dram();
 
 	return 0;
 }
