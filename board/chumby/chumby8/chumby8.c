@@ -136,10 +136,16 @@ int board_early_init_f(void)
 
 int board_init(void)
 {
+	struct udevice *panel;
+
 	/* arch number of Board */
 	gd->bd->bi_arch_number = MACH_TYPE_SILVERMOON;
-	/* adress of boot parameters */
+	/* address of boot parameters */
 	gd->bd->bi_boot_params = armd1_sdram_base(0) + 0x100;
+	/* get panel -- pxa168 display driver doesn't look for one.
+	 * this ensures the backlight will be activated */
+	uclass_get_device(UCLASS_PANEL, 0, &panel);
+
 	return 0;
 }
 

@@ -19,6 +19,19 @@
 	memory {
 		reg = <0x00000000 0x08000000>; /* 128 MB */
 	};
+
+	backlight: backlight {
+		compatible = "gpio-backlight";
+		gpios = <&gpio 84 GPIO_ACTIVE_HIGH>;
+		default-on;
+		status = "okay";
+	};
+
+	panel: panel {
+		compatible = "simple-panel";
+		backlight = <&backlight>;
+		status = "okay";
+	};
 };
 
 &uart1 {
