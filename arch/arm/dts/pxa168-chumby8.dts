@@ -20,6 +20,14 @@
 		reg = <0x00000000 0x08000000>; /* 128 MB */
 	};
 
+	soc {
+		u-boot,dm-pre-proper;
+
+		apb@d4000000 {
+			u-boot,dm-pre-proper;
+		};
+	};
+
 	backlight: backlight {
 		compatible = "gpio-backlight";
 		gpios = <&gpio 84 GPIO_ACTIVE_HIGH>;
@@ -35,7 +43,7 @@
 };
 
 &uart1 {
-	u-boot,dm-spl;
+	u-boot,dm-pre-proper;
 	status = "okay";
 };
 
@@ -68,7 +76,7 @@
 
 &lcd0 {
 	status = "okay";
-	u-boot,dm-pre-reloc;
+	u-boot,dm-pre-proper;
 
 	display-timings {
 		native-mode = <&timing0>;
