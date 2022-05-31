@@ -163,6 +163,8 @@ int board_early_init_f(void)
 int board_init(void)
 {
 	struct udevice *panel;
+	struct armd1apb1_registers *apb1clkres =
+		(struct armd1apb1_registers *)ARMD1_APBC1_BASE;
 
 	/* arch number of Board */
 	gd->bd->bi_arch_number = MACH_TYPE_SILVERMOON;
@@ -171,6 +173,9 @@ int board_init(void)
 	/* get panel -- pxa168 display driver doesn't look for one.
 	 * this ensures the backlight will be activated */
 	uclass_get_device(UCLASS_PANEL, 0, &panel);
+
+	/* Power on UART3 with 14.7456 MHz clock */
+	writel(APBC_APBCLK | APBC_FNCLK | APBC_FNCLKSEL(1), &apb1clkres->uart3);
 
 	return 0;
 }
@@ -199,11 +204,6 @@ static void send_coproc_command(const char *cmd)
 	struct dm_serial_ops *ops = NULL;
 	int err;
 	int q_found;
-
-	/* Power on UART3 with 14.7456 MHz clock */
-	struct armd1apb1_registers *apb1clkres =
-		(struct armd1apb1_registers *)ARMD1_APBC1_BASE;
-	writel(APBC_APBCLK | APBC_FNCLK | APBC_FNCLKSEL(1), &apb1clkres->uart3);
 
 	if (uclass_get_device_by_seq(UCLASS_SERIAL, 2, &dev)) {
 		log_err("unable to find coprocessor UART\n");
