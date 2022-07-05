@@ -177,6 +177,26 @@ int board_init(void)
 	/* Power on UART3 with 14.7456 MHz clock */
 	writel(APBC_APBCLK | APBC_FNCLK | APBC_FNCLKSEL(1), &apb1clkres->uart3);
 
+	/* Power on PWM2 with a special sequence that I determined through testing.
+	 * Start by working with the PWM1 register, because it contains shared bits
+	 * for PWM1 and PWM2. Take the shared PWM1+2 out of reset and turn on its
+	 * shared PWM1+2 APB bus clock as well. We *also* need to turn on the PWM1
+	 * functional clock here, or else PWM2 won't work. The datasheet doesn't
+	 * mention this limitation. (Also, select a 13 MHz functional clock) */
+	writel(APBC_APBCLK | APBC_FNCLK | APBC_FNCLKSEL(0), &apb1clkres->pwm1);
+	/* Now, we can turn off the functional clock for PWM1. Linux will turn it on
+	 * later if it wants to use PWM1. We just had to turn it on temporarily
+	 * in order to "kick start" everything into operation. */
+	writel(APBC_APBCLK | APBC_FNCLKSEL(0), &apb1clkres->pwm1);
+	/* Finally, take PWM2 out of reset. The datasheet says to always write 0 to
+	 * the reset bit, but it defaults to 1. If I don't do this, Linux never enables
+	 * it and it runs into problems using PWM2. (Also, use 13 MHz functional clock) */
+	writel(APBC_FNCLKSEL(0), &apb1clkres->pwm2);
+	/* At this point, Linux is free to toggle the FNCLK bit on and off in the
+	 * PWM1 and PWM2 clock control registers when it wants to control PWM1 and PWM2,
+	 * respectively. If I don't do this initial twiddling at startup, it doesn't work.
+	 * I assume that a similar workaround is needed for PWM3 and PWM4. */
+
 	return 0;
 }
 
