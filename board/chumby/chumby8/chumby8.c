@@ -197,6 +197,10 @@ int board_init(void)
 	 * respectively. If I don't do this initial twiddling at startup, it doesn't work.
 	 * I assume that a similar workaround is needed for PWM3 and PWM4. */
 
+	/* Power on I2C1 and I2C2 */
+	writel(APBC_APBCLK | APBC_FNCLK | APBC_FNCLKSEL(0), &apb1clkres->twsi0);
+	writel(APBC_APBCLK | APBC_FNCLK | APBC_FNCLKSEL(0), &apb1clkres->twsi1);
+
 	return 0;
 }
 
