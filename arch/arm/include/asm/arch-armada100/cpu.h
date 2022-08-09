@@ -126,12 +126,12 @@ struct armd1apb1_registers {
 * Refer Datasheet Appendix A.11
 */
 struct armd1apb2_registers {
-	u32 pad1[0x01C - 0x000];
+	u8 pad1[0x01C - 0x000];
 	u32 ssp1_clkrst;		/* 0x01C */
 	u32 ssp2_clkrst;		/* 0x020 */
-	u32 pad2[0x04C - 0x020 - 4];
+	u8 pad2[0x04C - 0x020 - 4];
 	u32 ssp3_clkrst;		/* 0x04C */
-	u32 pad3[0x058 - 0x04C - 4];
+	u8 pad3[0x058 - 0x04C - 4];
 	u32 ssp4_clkrst;		/* 0x058 */
 	u32 ssp5_clkrst;		/* 0x05C */
 };
