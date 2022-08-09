@@ -165,6 +165,8 @@ int board_init(void)
 	struct udevice *panel;
 	struct armd1apb1_registers *apb1clkres =
 		(struct armd1apb1_registers *)ARMD1_APBC1_BASE;
+	struct armd1apb2_registers *apb2clkres =
+		(struct armd1apb2_registers *)ARMD1_APBC2_BASE;
 
 	/* arch number of Board */
 	gd->bd->bi_arch_number = MACH_TYPE_SILVERMOON;
@@ -200,6 +202,10 @@ int board_init(void)
 	/* Power on I2C1 and I2C2 */
 	writel(APBC_APBCLK | APBC_FNCLK | APBC_FNCLKSEL(0), &apb1clkres->twsi0);
 	writel(APBC_APBCLK | APBC_FNCLK | APBC_FNCLKSEL(0), &apb1clkres->twsi1);
+
+	/* Set up SSP1's functional clock selection to use the programmable audio clock.
+	 * Leave it in reset for now though; Linux will fix that later when it's ready */
+	writel(APBC_RST | APBC_FNCLKSEL(4), &apb2clkres->ssp1_clkrst);
 
 	return 0;
 }
