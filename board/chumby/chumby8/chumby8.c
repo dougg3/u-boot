@@ -167,6 +167,8 @@ int board_init(void)
 		(struct armd1apb1_registers *)ARMD1_APBC1_BASE;
 	struct armd1apb2_registers *apb2clkres =
 		(struct armd1apb2_registers *)ARMD1_APBC2_BASE;
+	struct armd1apmu_registers *apmuclkres =
+		(struct armd1apmu_registers *)ARMD1_APMU_BASE;
 
 	/* arch number of Board */
 	gd->bd->bi_arch_number = MACH_TYPE_SILVERMOON;
@@ -206,6 +208,29 @@ int board_init(void)
 	/* Set up SSP1's functional clock selection to use the programmable audio clock.
 	 * Leave it in reset for now though; Linux will fix that later when it's ready */
 	writel(APBC_RST | APBC_FNCLKSEL(4), &apb2clkres->ssp1_clkrst);
+
+	/* Power on the GC300 2D GPU. This is complicated; follow what the Chumby kernel did,
+	 * except let's run it at 624 MHz. Just allowing common clk framework to power things
+	 * on willy nilly results in problems with GPU failing to reset, recover hung GPU, etc. */
+	/* Reset GC clock */
+	writel(0x00, &apmuclkres->gccrc);
+	udelay(1);
+	/* Select GC clock source (624 MHz) */
+	writel(0xC0, &apmuclkres->gccrc);
+	/* Enable GC CLK EN */
+	writel(0xD0, &apmuclkres->gccrc);
+	/* Enable GC HCLK EN */
+	writel(0xD8, &apmuclkres->gccrc);
+	/* Enable GC ACLK EN */
+	writel(0xF8, &apmuclkres->gccrc);
+	/* Reset GC */
+	writel(0xF8, &apmuclkres->gccrc);
+	/* Pull GC out of reset */
+	writel(0xFA, &apmuclkres->gccrc);
+	/* Delay 48 cycles */
+	udelay(1);
+	/* Pull GC AXI/AHB out of reset */
+	writel(0xFF, &apmuclkres->gccrc);
 
 	return 0;
 }
