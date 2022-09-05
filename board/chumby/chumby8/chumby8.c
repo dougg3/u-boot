@@ -178,6 +178,11 @@ int board_init(void)
 	 * this ensures the backlight will be activated */
 	uclass_get_device(UCLASS_PANEL, 0, &panel);
 
+	/* Undocumented register tweak from vendor u-boot:
+	 * "lowering RTC setting could improve Vmin" */
+	writel(0x16B5AD6D, 0xD4282C10);
+	writel(0x2D5B56B5, 0xD4282C18);
+
 	/* Power on UART3 with 14.7456 MHz clock */
 	writel(APBC_APBCLK | APBC_FNCLK | APBC_FNCLKSEL(1), &apb1clkres->uart3);
 
