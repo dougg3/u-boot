@@ -84,11 +84,11 @@
 			hactive = <800>;
 			vactive = <600>;
 			hfront-porch = <40>;
-			hsync-len = <128>;
+			hsync-len = <126>;
 			hback-porch = <215>;
-			vfront-porch = <14>;
+			vfront-porch = <1>;
 			vsync-len = <4>;
-			vback-porch = <34>;
+			vback-porch = <24>;
 			clock-frequency = <44571429>;
 		};
 	};
