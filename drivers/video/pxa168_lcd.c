@@ -203,10 +203,10 @@ static void pxa168_lcd_register_init(struct pxa168_lcd_info *lcd_info,
 	 * Bit     29: SCLK updates after vsync
 	 * Bit     28: Not used when 312 MHz PLL is selected
 	 * Bits 27-16: Clock fraction divider = 0
-	 * Bits 15-00: Clock Divider = 7. So clock is 312/7 = 44.571428571 MHz
+	 * Bits 15-00: Clock Divider = 8. So clock is 312/8 = 39 MHz
 	 * See page 475 in section 28.5.
 	 */
-	writel(0x80000007, regs + LCD_CFG_SCLK_DIV);
+	writel(0x80000008, regs + LCD_CFG_SCLK_DIV);
 
 	/*
 	 * Set the LCD_SPU_DMACTRL 0 Register
