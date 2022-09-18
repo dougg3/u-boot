@@ -1,0 +1,21 @@
+# Default stuff provided by u-boot
+baudrate=115200
+bootdelay=1
+
+# Default boot args
+bootargs=console=ttyS0,115200 ro ignore_loglevel rootwait
+# Arguments to add when doing an MMC boot
+bootargs_mmc=setenv bootargs ${bootargs} root=/dev/mmcblk0p2
+# Load the device tree from the SD card
+getfdt=ext4load mmc 0:2 0x2000000 /boot/pxa168-chumby8.dtb
+# Load the kernel from the SD card
+getkernel=ext4load mmc 0:2 0x1000000 /boot/uImage
+# Load the splash screen, display it, and also copy it to another location in RAM.
+# Then, update the display to use the copy. This is needed because the framebuffer
+# address that u-boot picks is terrible and gets overwritten when the kernel loads.
+showsplash=ext4load mmc 0:2 0x1000000 /boot/logo_silvermoon_chumby_normal.bmp ; bmp display 0x1000000 ; cp.b 0x07e00000 0x06E00000 0x1D4C00 ; mw.l 0xD420B0F4 0x06E00000
+# An MMC boot involves setting the args, showing splash, getting kernel/fdt, and booting
+bootcmd_mmc=run bootargs_mmc ; run showsplash ; run getkernel ; run getfdt ; bootm 0x1000000 - 0x2000000
+
+# Boot from MMC by default
+bootcmd=run bootcmd_mmc
