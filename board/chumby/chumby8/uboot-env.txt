@@ -3,7 +3,7 @@ baudrate=115200
 bootdelay=1
 
 # Default boot args
-bootargs=console=ttyS0,115200 ro ignore_loglevel rootwait
+bootargs=console=ttyS0,115200 ro ignore_loglevel rootwait usb-storage.quirks=058f:6366:i
 # Arguments to add when doing an MMC boot
 bootargs_mmc=setenv bootargs ${bootargs} root=/dev/mmcblk0p2
 # Load the device tree from the SD card
